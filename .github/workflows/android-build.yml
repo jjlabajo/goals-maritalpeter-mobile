@@ -33,7 +33,8 @@ jobs:
         id: brancher
         run: |
           SHORT_SHA=$(git rev-parse --short HEAD)
-          BRANCH_NAME="${{ inputs.project_id }}-${SHORT_SHA}"
+          # Append the unique workflow run ID to the branch name
+          BRANCH_NAME="build/${{ inputs.project_id }}-${SHORT_SHA}-${{ github.run_id }}"
           git checkout -b "${BRANCH_NAME}"
           echo "branch_name=${BRANCH_NAME}" >> $GITHUB_OUTPUT
           echo "🌿 Switched to new unique branch: ${BRANCH_NAME}"
