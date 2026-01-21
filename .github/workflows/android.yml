@@ -3,53 +3,52 @@ name: Build Android APK
 on:
   push:
     branches:
-      - main  # Change this if your default branch is 'master'
-  workflow_dispatch: # Allows you to manually trigger the build from the Actions tab
+      - main
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. Download your code
+      # Updated to v4
       - name: Checkout source
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # 2. Setup Java (Required for Android build)
+      # Updated to v4
       - name: Setup Java
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '17' # Standard for Capacitor 5/6
+          java-version: '17'
 
-      # 3. Setup Node.js
+      # Updated to v4
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # 4. Install NPM Dependencies
       - name: Install Dependencies
         run: npm install
 
-      # 5. Build the Web App (React/Vue/Angular/etc.)
       - name: Build Web Assets
         run: npm run build
 
-      # 6. Copy web assets to the Android folder
       - name: Sync Capacitor
         run: npx cap sync android
 
-      # 7. Build the APK using Gradle
       - name: Build Android APK
         run: |
           cd android
-          chmod +x gradlew  # Grant permission to execute the script
+          chmod +x gradlew
           ./gradlew assembleDebug
 
-      # 8. Upload the APK so you can download it
+      # FIX: Updated to v4 to resolve the error
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: app-debug
           path: android/app/build/outputs/apk/debug/app-debug.apk
+          # v4 does not zip single files by default.
+          # If you want it zipped, adding compression-level helps,
+          # but usually, downloading the raw APK is fine.
