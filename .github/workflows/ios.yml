@@ -1,0 +1,46 @@
+name: Build iOS App
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest # REQUIRED: iOS builds must run on macOS
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      # Java is NOT needed for iOS, so we removed it.
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Sync Capacitor
+        run: npx cap sync ios
+
+      # We build for the Simulator to avoid "Signing Identity" errors in CI
+      - name: Build iOS App (Simulator)
+        run: |
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace \
+            -scheme App \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            -configuration Debug \
+            -derivedDataPath build \
+            clean build
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-app-simulator
+          # This uploads the compiled .app bundle
+          path: ios/App/build/Build/Products/Debug-iphonesimulator/App.app
