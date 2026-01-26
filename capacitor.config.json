@@ -1,6 +1,6 @@
 {
   "appId": "com.goalsmartialpeter.app",
-  "appName": "Goals | Success Planner App",
+  "appName": "Goals Success Planner",
   "webDir": "www",
   "server": {
     "url": "https://goals.martialpeter.com",
